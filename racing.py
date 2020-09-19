@@ -4,6 +4,7 @@ import random
 
 pygame.init()
 
+#TO DO: Make questions and make them random and fix go back into incorrect bug.
 #Title
 pygame.display.set_caption('Average Speed Game')
 
@@ -18,6 +19,21 @@ clock= pygame.time.Clock()
 #background image
 bg=pygame.image.load('C:\\Users\\18597\\Desktop\\My Python Scripts\\speed\\bg.png')
 
+#button colors
+buttonWhite=(255,255,255)
+buttonPink=(255,182,193)
+
+class car(object):
+    def __init__(self,x):
+        self.x=x
+        self.y=300
+        self.image=pygame.image.load('C:\\Users\\18597\\Desktop\\My Python Scripts\\speed\\car.png')
+
+            
+#Car Instance
+global racer
+racer=car(0)
+
 class question(object):
     def __init__(self,q,a,b,c,d):
         self.a=a
@@ -26,41 +42,106 @@ class question(object):
         self.d=d
         self.q=q
         self.font=pygame.font.SysFont('Courier',30,True,False)
-        self.mouse=pygame.mouse.get_pos()
-        self.click=pygame.mouse.get_pressed()
-        self.action=None 
-        self.button=pygame.draw.rect(win,(255,255,255),(150,150,100,100))
-        self.answer='Answer-'
-
+        
     def draw(self,win):
-        if newQ ==True:
-            self.font
-            q1Text= self.font.render(self.q,1,(255,182,193))
-            win.blit(q1Text,(200,50))
-            q1TextA= self.font.render(self.a,1,(255,182,193))
-            win.blit(q1TextA,(150,150))
-            q1TextB= self.font.render(self.b,1,(255,182,193))
-            win.blit(q1TextB,(550,150))
-            q1TextC= self.font.render(self.c,1,(255,182,193))
-            win.blit(q1TextC,(150,250))
-            q1TextD= self.font.render(self.d,1,(255,182,193))
-            win.blit(q1TextD,(550,250))
-            q1Ans=self.font.render(self.answer+input(),1,(255,182,193))
-            win.blit(q1Ans,(200,600))
+        if newQ==True:
+        self.font
+        q1Text= self.font.render(self.q,1,(255,182,193))
+        win.blit(q1Text,(200,50))
+        button('',130,150,300,50,buttonWhite,buttonWhite,145,145,buttonPink,buttonWhite,'inco')
+        q1TextA= self.font.render(self.a,1,(255,182,193))
+        win.blit(q1TextA,(150,150))
+        button('',530,150,300,50,buttonWhite,buttonWhite,145,145,buttonPink,buttonWhite,'co')
+        q1TextB= self.font.render(self.b,1,(255,182,193))
+        win.blit(q1TextB,(550,150))
+        button('',130,240,350,50,buttonWhite,buttonWhite,145,145,buttonPink,buttonWhite,'inco')
+        q1TextC= self.font.render(self.c,1,(255,182,193))
+        win.blit(q1TextC,(150,250))
+        button('',530,240,300,50,buttonWhite,buttonWhite,145,145,buttonPink,buttonWhite,'inco')
+        q1TextD= self.font.render(self.d,1,(255,182,193))
+        win.blit(q1TextD,(550,250))
+
             
 
+    #Button for Start
+def button(msg,x,y,w,h,inactive,active,xT,yT,inactiveT,activeT,action=None):
+        #Use location of mouse to track the button
+        mouse= pygame.mouse.get_pos()
+        #Tracks mouse clicks
+        click=pygame.mouse.get_pressed() 
+        #0 is x, 1 is y, 2 is width, 3 is height
+        if x+w> mouse[0] >x and y+h>mouse[1]>y:
+            pygame.draw.rect(win, inactive,(x,y,w,h))
+            #Click[0] is left mouse click
+            if click[0] == 1 and action!= None:
+                if action == 'co':
+                    correctPage()
+                elif action == 'inco':
+                    incorrectPage()
+                elif action == 'backQ':
+                    gameLoop()
+        else:       
+            pygame.draw.rect(win, active,(x,y,w,h))
+        buttonText= pygame.font.SysFont('Courier',30,True,False)
+        buttonType= buttonText.render(msg,1,(activeT))
+        buttonText2= pygame.font.SysFont('Courier',30,True,False)
+        buttonType2= buttonText2.render(msg,1,(inactiveT))
+        if x+w> mouse[0] >x and y+h>mouse[1] > y:
+            win.blit(buttonType2,(xT,yT))
+        else:
+            win.blit(buttonType,(xT,yT))            
+        buttonText2= pygame.font.SysFont('Courier',30,True,False)
+        buttonType2= buttonText2.render(msg,1,(inactiveT))
+        
+
+
+def incorrectPage():
+    inco=True
+    while inco:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                quit()
+        win.blit(bg,(0,0))
+        incoFont=pygame.font.SysFont('Courier',50,True,False)
+        incoText= incoFont.render('Incorrect',1,(255,182,193))
+        win.blit(incoText,(315,100))
+        if racer.x>=200:
+            racer.x=-200
+        win.blit(racer.image,(racer.x,270))
+        pygame.display.update()
+        clock.tick(15)
+    
+
 def correctPage():
-    print('sucessful')
+    co=True
+    while co:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                quit()
+        win.blit(bg,(0,0))
+        coFont=pygame.font.SysFont('Courier',50,True,False)
+        coText= coFont.render('Correct!',1,(255,182,193))
+        win.blit(coText,(315,100))
+        button('Back',275,220,300,50,buttonWhite,buttonPink,380,230,buttonPink,buttonWhite,'backQ')
+        racer.x=+200
+        win.blit(racer.image,(racer.x,270))
+        pygame.display.update()
+        clock.tick(15)
+
 def redrawGameWin():
     win.blit(bg,(0,0))
     q1.draw(win)
+    win.blit(racer.image,(racer.x,270))
     pygame.display.update()
+    clock.tick(15)
 
 def gameLoop():
     global newQ
     newQ=True
     global q1
-    q1=question('What is the formula for speed','A.Time/Distance','B.Distance/Time','C.Accleration/Time','D.bruh')
+    q1=question('What is the formula for speed','A.Time/Distance','B.Distance/Time','C.Accleration/Time','D.Distance+Time')
     global font
     q1.font
     run= True
